@@ -14,6 +14,18 @@ describe :to_from do
     $?.must_equal 0
   end
 
+  it 'finds the easy js source file when forced' do
+    %x{#{DIR}/to_from.rb --src-dir '#{TEST_DIR}/src' --spec-dir '#{TEST_DIR}/spec' --file-ext .js --spec-suffix _spec --find-src a.js}.
+      chomp.must_equal(TEST_DIR + '/src/a.js')
+    $?.must_equal 0
+  end
+
+  it 'finds the easy js spec file when forced' do
+    %x{#{DIR}/to_from.rb --src-dir '#{TEST_DIR}/src' --spec-dir '#{TEST_DIR}/spec' --file-ext .js --spec-suffix _spec --find-spec a_spec.js}.
+      chomp.must_equal(TEST_DIR + '/spec/a_spec.js')
+    $?.must_equal 0
+  end
+
   it 'finds the easy js source file' do
     %x{#{DIR}/to_from.rb --src-dir '#{TEST_DIR}/src' --spec-dir '#{TEST_DIR}/spec' --file-ext .js --spec-suffix _spec a_spec.js}.
       chomp.must_equal(TEST_DIR + '/src/a.js')

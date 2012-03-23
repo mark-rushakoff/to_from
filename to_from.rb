@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 #
+# https://github.com/mark-rushakoff/to_from
+#
 # MIT LICENSE
 #
 # Copyright (c) 2012 Mark Rushakoff
@@ -23,7 +25,7 @@ def to_from(opts)
   spec_matcher = spec_ext + '$'
 
   is_spec = opts[:name].match(spec_matcher)
-  $stderr.puts("Appears to be a spec file? #{is_spec}") if v
+  $stderr.puts("Appears to be a spec file? #{not not is_spec}") if v
 
   if is_spec
     old_ext = spec_ext
@@ -37,7 +39,20 @@ def to_from(opts)
 
   complement = opts[:name][0...(-(old_ext.size))] + new_ext
   $stderr.puts("Complementary file: #{complement}") if v
-  glob = dir + '/**/' + complement
+
+  if (opts[:find_spec] and is_spec)
+    target = opts[:name]
+    dir = opts[:spec_dir]
+  elsif (opts[:find_src] and not is_spec)
+    target = opts[:name]
+    dir = opts[:src_dir]
+  else
+    target = complement
+  end
+
+  $stderr.puts("Searching for #{target} in #{dir}") if v
+
+  glob = dir + '/**/' + target
   $stderr.puts("Glob pattern: #{glob}") if v
   Dir.glob(glob).first.to_s
 end
@@ -52,6 +67,8 @@ if __FILE__ == $0
     opt :file_ext, 'File extension', :default => '.rb'
     opt :spec_suffix, 'Spec suffix (before .file_extension)', :default => '_spec'
     opt :name, 'Explicitly set name of file'
+    opt :find_spec, 'Force return of spec file (may be same as input)', :default => false
+    opt :find_src, 'Force return of source file (may be same as input)', :default => false
     opt :verbose, 'Verbose output', :default => false
   end
 
