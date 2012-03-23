@@ -11,7 +11,11 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 def to_from(opts)
-  raise "No file specified" unless opts[:name]
+  raise 'No file specified' unless opts[:name]
+
+  v = opts[:verbose]
+
+  $stderr.puts('Input: ' + opts[:name]) if v
 
   src_ext = opts[:file_ext]
   src_matcher = src_ext + '$'
@@ -19,14 +23,23 @@ def to_from(opts)
   spec_matcher = spec_ext + '$'
 
   is_spec = opts[:name].match(spec_matcher)
+  $stderr.puts("Appears to be a spec file? #{is_spec}") if v
 
   if is_spec
-    complement = opts[:name][0...(-(spec_ext.size))] + src_matcher[0...-1]
-    Dir.glob(opts[:src_dir] + '/**/*' + complement).first.to_s
+    old_ext = spec_ext
+    new_ext = src_ext
+    dir = opts[:src_dir]
   else
-    complement = opts[:name][0...(-(src_ext.size))] + spec_matcher[0...-1]
-    Dir.glob(opts[:spec_dir] + '/**/*' + complement).first.to_s
+    old_ext = src_ext
+    new_ext = spec_ext
+    dir = opts[:spec_dir]
   end
+
+  complement = opts[:name][0...(-(old_ext.size))] + new_ext
+  $stderr.puts("Complementary file: #{complement}") if v
+  glob = dir + '/**/' + complement
+  $stderr.puts("Glob pattern: #{glob}") if v
+  Dir.glob(glob).first.to_s
 end
 
 if __FILE__ == $0
@@ -39,6 +52,7 @@ if __FILE__ == $0
     opt :file_ext, 'File extension', :default => '.rb'
     opt :spec_suffix, 'Spec suffix (before .file_extension)', :default => '_spec'
     opt :name, 'Explicitly set name of file'
+    opt :verbose, 'Verbose output', :default => false
   end
 
   opts[:name] ||= ARGV[0]
