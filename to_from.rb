@@ -10,25 +10,39 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-SRC_DIR='./src'
-SPEC_DIR='./spec'
-FILE_EXT='js'
-SPEC_SUFFIX='_spec'
+def to_from(opts)
+  raise "No file specified" unless opts[:name]
 
-input_name = ARGV[0]
-abort("No file specified") if ARGV.empty?
+  src_ext = opts[:file_ext]
+  src_matcher = src_ext + '$'
+  spec_ext = opts[:spec_suffix] + src_ext
+  spec_matcher = spec_ext + '$'
 
-SRC_EXT='.' + FILE_EXT
-SRC_MATCHER=SRC_EXT + '$'
-SPEC_EXT=SPEC_SUFFIX + SRC_EXT
-SPEC_MATCHER=SPEC_EXT + '$'
+  is_spec = opts[:name].match(spec_matcher)
 
-is_spec = input_name.match(SPEC_MATCHER)
+  if is_spec
+    complement = opts[:name][0...(-(spec_ext.size))] + src_matcher[0...-1]
+    Dir.glob(opts[:src_dir] + '/**/*' + complement).first.to_s
+  else
+    complement = opts[:name][0...(-(src_ext.size))] + spec_matcher[0...-1]
+    Dir.glob(opts[:spec_dir] + '/**/*' + complement).first.to_s
+  end
+end
 
-if is_spec
-    complement = input_name[0...(-(SPEC_EXT.size))] + SRC_MATCHER[0...-1]
-    puts Dir.glob(SRC_DIR + '/**/*' + complement).first.to_s
-else
-    complement = input_name[0...(-(SRC_EXT.size))] + SPEC_MATCHER[0...-1]
-    puts Dir.glob(SPEC_DIR + '/**/*' + complement).first.to_s
+if __FILE__ == $0
+  require 'rubygems'
+  require 'trollop'
+
+  opts = Trollop::options do
+    opt :src_dir, 'Source directory', :default => './src'
+    opt :spec_dir, 'Spec directory', :default => './spec'
+    opt :file_ext, 'File extension', :default => '.rb'
+    opt :spec_suffix, 'Spec suffix (before .file_extension)', :default => '_spec'
+    opt :name, 'Explicitly set name of file'
+  end
+
+  opts[:name] ||= ARGV[0]
+  match = to_from(opts)
+  puts match
+  exit match.size > 0 ? 0 : 1
 end
