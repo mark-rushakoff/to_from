@@ -52,9 +52,15 @@ def to_from(opts)
 
   $stderr.puts("Searching for #{target} in #{dir}") if v
 
-  glob = dir + '/**/' + target
-  $stderr.puts("Glob pattern: #{glob}") if v
-  Dir.glob(glob).first.to_s
+  glob_pattern = dir + '/**/' + target
+  $stderr.puts("Glob pattern: #{glob_pattern}") if v
+  globbed = Dir.glob(glob_pattern).sort
+  if globbed.size == 0
+    $stderr.puts("No matching file(s) found for #{glob_pattern}")
+  elsif globbed.size > 1
+    $stderr.puts("Warning: Multiple files matched!")
+  end
+  globbed
 end
 
 if __FILE__ == $0
@@ -74,6 +80,8 @@ if __FILE__ == $0
 
   opts[:name] ||= ARGV[0]
   match = to_from(opts)
-  puts match
+  match.each do |file|
+    puts file
+  end
   exit match.size > 0 ? 0 : 1
 end

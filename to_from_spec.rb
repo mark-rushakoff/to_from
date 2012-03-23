@@ -38,6 +38,14 @@ describe :to_from do
     $?.must_equal 0
   end
 
+  it 'finds duplicate matches' do
+    lines = %x{#{DIR}/to_from.rb --src-dir '#{TEST_DIR}/src' --spec-dir '#{TEST_DIR}/spec' duplicate.rb}.chomp.split("\n")
+    lines[0].must_equal(TEST_DIR + '/spec/dir1/duplicate_spec.rb')
+    lines[1].must_equal(TEST_DIR + '/spec/duplicate_spec.rb')
+    lines.size.must_equal(2)
+    $?.must_equal 0
+  end
+
   it 'exits non-zero for a failed match' do
     %x{#{DIR}/to_from.rb --src-dir '#{TEST_DIR}/src' --spec-dir '#{TEST_DIR}/spec' --file-ext .js --spec-suffix _spec a_fake_spec.js}.
       chomp.must_equal('')
