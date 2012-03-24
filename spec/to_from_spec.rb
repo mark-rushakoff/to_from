@@ -4,8 +4,8 @@ require 'rubygems'
 require 'minitest/autorun'
 require 'to_from'
 
-DIR = File.dirname(__FILE__)
-TEST_DIR = DIR + '/test'
+DIR = File.expand_path(File.dirname(__FILE__) + '/../bin')
+TEST_DIR = File.dirname(__FILE__) + '/fixture_dir/test'
 
 describe :to_from do
   it 'finds the easy js spec file' do

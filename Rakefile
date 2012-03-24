@@ -1,5 +1,9 @@
+#!/usr/bin/env rake
+
+require 'rake/testtask'
+
 task :default => :test
 
-task :test do
-  ruby 'to_from_spec.rb'
+Rake::TestTask.new do |t|
+  t.pattern = 'spec/*_spec.rb'
 end

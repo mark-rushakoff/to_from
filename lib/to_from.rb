@@ -74,26 +74,3 @@ def to_from(opts)
   end
   globbed
 end
-
-if __FILE__ == $0
-  require 'rubygems'
-  require 'trollop'
-
-  opts = Trollop::options do
-    opt :src_dir, 'Source directory', :default => './src'
-    opt :spec_dir, 'Spec directory', :default => './spec'
-    opt :file_ext, 'File extension', :default => '.rb'
-    opt :spec_suffix, 'Spec suffix (before .file_extension)', :default => '_spec'
-    opt :name, 'Explicitly set name of file'
-    opt :find_spec, 'Force return of spec file (may be same as input)', :default => false
-    opt :find_src, 'Force return of source file (may be same as input)', :default => false
-    opt :verbose, 'Verbose output', :default => false
-  end
-
-  opts[:name] ||= ARGV[0]
-  match = to_from(opts)
-  match.each do |file|
-    puts file
-  end
-  exit match.size > 0 ? 0 : 1
-end
