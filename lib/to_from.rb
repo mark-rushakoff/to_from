@@ -24,6 +24,50 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+class ToFrom
+  ATTRIBUTES = %w(file_ext src_dir spec_dir spec_suffix).map &:to_sym
+  attr_accessor *ATTRIBUTES
+  def initialize(opts)
+    opts ||= {}
+    @name = name
+    self.class::ATTRIBUTES.each do |attr|
+      self.instance_variable_set(("@#{attr}").to_sym, opts[attr])
+    end
+  end
+
+  def is_spec?(name)
+    name.match(spec_matcher)
+  end
+
+  def complement_name(name)
+    exts = [src_ext, spec_ext]
+    exts.reverse! if is_spec? name
+
+    # chop off the existing extension and put the complement on
+    name[0...(-(exts[0].size))] + exts[1]
+  end
+
+  def find_spec
+  end
+
+  private
+  def src_ext
+    @file_ext
+  end
+
+  def src_matcher
+    src_ext + '$'
+  end
+
+  def spec_ext
+    @spec_suffix + src_ext
+  end
+
+  def spec_matcher
+    spec_ext + '$'
+  end
+end
+
 def to_from(opts)
   raise 'No file specified' unless opts[:name]
 

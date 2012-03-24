@@ -4,52 +4,17 @@ require 'rubygems'
 require 'minitest/autorun'
 require 'to_from'
 
-DIR = File.expand_path(File.dirname(__FILE__) + '/../bin')
-TEST_DIR = File.dirname(__FILE__) + '/fixture_dir/test'
-
-describe :to_from do
-  it 'finds the easy js spec file' do
-    %x{#{DIR}/to_from.rb --src-dir '#{TEST_DIR}/src' --spec-dir '#{TEST_DIR}/spec' --file-ext .js --spec-suffix _spec a.js}.
-      chomp.must_equal(TEST_DIR + '/spec/a_spec.js')
-    $?.must_equal 0
-  end
-
-  it 'finds the easy js source file when forced' do
-    %x{#{DIR}/to_from.rb --src-dir '#{TEST_DIR}/src' --spec-dir '#{TEST_DIR}/spec' --file-ext .js --spec-suffix _spec --find-src a.js}.
-      chomp.must_equal(TEST_DIR + '/src/a.js')
-    $?.must_equal 0
-  end
-
-  it 'finds the easy js spec file when forced' do
-    %x{#{DIR}/to_from.rb --src-dir '#{TEST_DIR}/src' --spec-dir '#{TEST_DIR}/spec' --file-ext .js --spec-suffix _spec --find-spec a_spec.js}.
-      chomp.must_equal(TEST_DIR + '/spec/a_spec.js')
-    $?.must_equal 0
-  end
-
-  it 'finds the easy js source file' do
-    %x{#{DIR}/to_from.rb --src-dir '#{TEST_DIR}/src' --spec-dir '#{TEST_DIR}/spec' --file-ext .js --spec-suffix _spec a_spec.js}.
-      chomp.must_equal(TEST_DIR + '/src/a.js')
-    $?.must_equal 0
-  end
-
-  it 'finds the difficult spec' do
-    %x{#{DIR}/to_from.rb --src-dir '#{TEST_DIR}/src' --spec-dir '#{TEST_DIR}/spec' nested.rb}.
-      chomp.must_equal(TEST_DIR + '/spec/dir1/dir2/dir3/nested_spec.rb')
-    $?.must_equal 0
-  end
-
-  it 'finds duplicate matches' do
-    lines = %x{#{DIR}/to_from.rb --src-dir '#{TEST_DIR}/src' --spec-dir '#{TEST_DIR}/spec' duplicate.rb}.chomp.split("\n")
-    lines[0].must_equal(TEST_DIR + '/spec/dir1/duplicate_spec.rb')
-    lines[1].must_equal(TEST_DIR + '/spec/duplicate_spec.rb')
-    lines.size.must_equal(2)
-    $?.must_equal 0
-  end
-
-  it 'exits non-zero for a failed match' do
-    %x{#{DIR}/to_from.rb --src-dir '#{TEST_DIR}/src' --spec-dir '#{TEST_DIR}/spec' --file-ext .js --spec-suffix _spec a_fake_spec.js}.
-      chomp.must_equal('')
-    $?.wont_equal 0
+describe ToFrom do
+  describe 'initializing with options' do
+      %w(file_ext src_dir spec_dir spec_suffix ).each do |opt|
+        it('works for ' + opt) do
+          obj = { :foo => 'bar' }
+          opts = {}
+          opts[opt.to_sym] = obj
+          tf = ToFrom.new('tf', opts)
+          val = tf.send opt.to_sym
+          val.must_equal obj
+        end
+      end
   end
 end
-
