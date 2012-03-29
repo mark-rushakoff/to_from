@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'minitest/autorun'
+require 'rspec'
 require 'to_from'
 
 describe ToFrom do
@@ -13,7 +13,7 @@ describe ToFrom do
           opts[opt.to_sym] = obj
           tf = ToFrom.new('tf', opts)
           val = tf.send opt.to_sym
-          val.must_equal obj
+          val.should == obj
         end
       end
   end
