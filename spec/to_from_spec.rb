@@ -5,16 +5,30 @@ require 'rspec'
 require 'to_from'
 
 describe ToFrom do
-  describe 'initializing with options' do
-      %w(file_ext src_dir spec_dir spec_suffix ).each do |opt|
-        it('works for ' + opt) do
-          obj = { :foo => 'bar' }
-          opts = {}
-          opts[opt.to_sym] = obj
-          tf = ToFrom.new('tf', opts)
-          val = tf.send opt.to_sym
-          val.should == obj
-        end
-      end
+  before(:each) do
+    opts = {}
+    opts['src'] = '.src'
+    opts['spec'] = '_spec.src'
+    opts['templates'] = '.template'
+
+    @tf = ToFrom.new(opts)
+  end
+
+  describe :root_name do
+    pending 'works' do
+      @tf.root_name('foo.src').should == 'foo'
+      @tf.root_name('bar_spec.src').should == 'bar'
+      @tf.root_name('baz.template').should == 'baz'
+    end
+  end
+
+  describe :find_all_matches do
+    pending 'globs the right directories' do
+      Dir.stub(:glob)
+      tf.find_all_matches('foo.src')
+      Dir.should_receive(:glob).with('src/**/foo.src')
+      Dir.should_receive(:glob).with('spec/**/foo_spec.src')
+      Dir.should_receive(:glob).with('templates/**/foo.template')
+    end
   end
 end
