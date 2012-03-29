@@ -27,7 +27,7 @@
 class ToFrom
   ATTRIBUTES = %w(file_ext src_dir spec_dir spec_suffix).map &:to_sym
   attr_accessor *ATTRIBUTES
-  def initialize(opts)
+  def initialize(name, opts)
     opts ||= {}
     @name = name
     self.class::ATTRIBUTES.each do |attr|
