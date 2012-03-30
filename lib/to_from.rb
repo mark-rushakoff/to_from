@@ -45,9 +45,8 @@ class ToFrom
   end
 
   def find_all_matches(rooted_name)
-    @map.map do |dir, suffix|
-      glob = "#{dir}/**/#{rooted_name}#{suffix}"
-      Dir.glob(glob)
+    @map.keys.map do |dir|
+      find_match_in_dir(rooted_name, dir)
     end.flatten
   end
 end

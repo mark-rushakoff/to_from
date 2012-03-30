@@ -87,5 +87,19 @@ describe ToFrom do
       matches.should include 'src/foo.src'
       matches.should include 'spec/foo_spec.src'
     end
+
+    it 'returns matches from multiple, nested directories' do
+      FileUtils.mkdir 'src'
+      FileUtils.mkdir 'src/dir1'
+      FileUtils.mkdir 'spec'
+      FileUtils.mkdir 'spec/dir2'
+      FileUtils.touch('src/dir1/foo.src')
+      FileUtils.touch('spec/dir2/foo_spec.src')
+
+      matches = @tf.find_all_matches('foo')
+      matches.length.should == 2
+      matches.should include 'src/dir1/foo.src'
+      matches.should include 'spec/dir2/foo_spec.src'
+    end
   end
 end
