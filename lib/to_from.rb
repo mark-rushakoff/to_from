@@ -30,7 +30,10 @@ class ToFrom
   end
 
   def root_name(name)
-    suffixes = @map.values.uniq.sort_by { |v| v.length }
+    suffixes = @map.values.uniq.sort_by { |v| v.length }.reverse
+    suffix = suffixes.detect { |s| name.end_with? s }
+    raise 'No suffix found' unless suffix
+    name.chomp suffix
   end
 end
 

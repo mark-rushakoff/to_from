@@ -15,7 +15,7 @@ describe ToFrom do
   end
 
   describe :root_name do
-    pending 'works' do
+    it 'works' do
       @tf.root_name('foo.src').should == 'foo'
       @tf.root_name('bar_spec.src').should == 'bar'
       @tf.root_name('baz.template').should == 'baz'
