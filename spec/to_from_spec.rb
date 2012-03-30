@@ -45,9 +45,6 @@ describe ToFrom do
 
   describe :find_match_in_dir do
     include FakeFS::SpecHelpers
-    before(:each) do
-      @tf.base_dir = '.'
-    end
 
     it 'returns an empty array when no match is found under dir' do
       @tf.find_match_in_dir('foo', 'src').should be_empty
@@ -69,6 +66,26 @@ describe ToFrom do
       matches.length.should == 2
       matches.should include 'src/foo.src'
       matches.should include 'src/bar/foo.src'
+    end
+  end
+
+  describe :find_all_matches do
+    include FakeFS::SpecHelpers
+
+    it 'returns an empty array when no match is found under dir' do
+      @tf.find_all_matches('foo').should be_empty
+    end
+
+    it 'returns matches from multiple directories' do
+      FileUtils.mkdir 'src'
+      FileUtils.mkdir 'spec'
+      FileUtils.touch('src/foo.src')
+      FileUtils.touch('spec/foo_spec.src')
+
+      matches = @tf.find_all_matches('foo')
+      matches.length.should == 2
+      matches.should include 'src/foo.src'
+      matches.should include 'spec/foo_spec.src'
     end
   end
 end

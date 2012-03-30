@@ -25,10 +25,8 @@
 # SOFTWARE.
 
 class ToFrom
-  attr_accessor :base_dir
   def initialize(dir_suffix_map=nil)
     @map = dir_suffix_map || {}
-    @base_dir = '.'
   end
 
   def matching_suffix(name)
@@ -42,8 +40,15 @@ class ToFrom
   end
 
   def find_match_in_dir(rooted_name, dir)
-    glob = "#{@base_dir}/#{dir}/**/#{rooted_name}#{@map[dir]}"
+    glob = "#{dir}/**/#{rooted_name}#{@map[dir]}"
     Dir.glob(glob)
+  end
+
+  def find_all_matches(rooted_name)
+    @map.map do |dir, suffix|
+      glob = "#{dir}/**/#{rooted_name}#{suffix}"
+      Dir.glob(glob)
+    end.flatten
   end
 end
 
