@@ -1,0 +1,4 @@
+- (dir: 'src', suffix: '.src')
+- (dir: 'spec', suffix: '_spec.src')
+- dir: 'templates'
+  suffix: '.template'
