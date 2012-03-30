@@ -29,9 +29,13 @@ class ToFrom
     @map = dir_suffix_map || {}
   end
 
+  def matching_suffix(name)
+    suffixes = @map.values.uniq.sort_by { |v| -(v.length) }
+    suffixes.detect { |s| name.end_with? s }
+  end
+
   def root_name(name)
-    suffixes = @map.values.uniq.sort_by { |v| v.length }.reverse
-    suffix = suffixes.detect { |s| name.end_with? s }
+    suffix = matching_suffix(name)
     raise 'No suffix found' unless suffix
     name.chomp suffix
   end
