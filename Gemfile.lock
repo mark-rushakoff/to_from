@@ -1,3 +1,10 @@
+GIT
+  remote: git://github.com/defunkt/fakefs.git
+  revision: 57d1dd3cfb1a62cfe70aae6a63e20825b22624d0
+  ref: 57d1dd3cfb1a62cfe70aae6a63e20825b22624d0
+  specs:
+    fakefs (0.4.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -16,5 +23,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  fakefs!
   rspec
   trollop
