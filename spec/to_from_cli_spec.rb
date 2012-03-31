@@ -64,6 +64,20 @@ shared_examples_for 'using the config file option' do |config_name|
       lines.should be_empty
     end
 
+    describe 'the -r option' do
+      it 'restricts results to a single directory' do
+        lines = get_output('-r src root_file')
+        lines.should == ['src/root_file.src']
+      end
+
+      it 'can be passed multiple times' do
+        lines = get_output('-r src -r spec root_file')
+        lines.length.should == 2
+        lines.should include 'src/root_file.src'
+        lines.should include 'spec/root_file_spec.src'
+      end
+    end
+
     it 'accepts the -s option to indicate a suffix is present on the supplied option' do
       assert_foo_output(get_output('-s foo.src'))
       assert_foo_output(get_output('-s foo_spec.src'))
