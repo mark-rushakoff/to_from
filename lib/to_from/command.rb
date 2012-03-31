@@ -28,8 +28,38 @@ require 'rubygems'
 require 'bundler'
 Bundler.setup(:default)
 
-require 'to_from/command'
+require 'to_from'
+require 'clip'
+require 'yaml'
 
-if __FILE__ == $0
-  ToFrom::Command::main
+module ToFrom
+  class Command
+    def self.main
+      options = Clip do |p|
+        p.optional('c', 'config', :desc => 'config file', :default => 'to_from.config.yml')
+        p.flag('s', 'suffix', :desc => 'indicate that NAME has a suffix')
+      end
+
+      if options.valid? && !options.remainder.empty?
+        config_file = options.config
+        abort("Cannot open configuration file #{config_file}") unless File.readable?(config_file)
+        hashes = YAML::load(File.open(config_file))
+        dir_suffixes = {}
+        hashes.each do |hash|
+          dir_suffixes[hash['dir']] = hash['suffix']
+        end
+
+        tf = ToFrom.new(dir_suffixes)
+
+        name = options.remainder[0]
+        root_name = (options.suffix? ? tf.root_name(name) : name)
+
+        abort('Could not find appropriate suffix for ' + name) unless root_name
+
+        puts tf.find_all_matches(root_name)
+      else
+        abort(options.to_s)
+      end
+    end
+  end
 end
