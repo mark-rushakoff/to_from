@@ -2,8 +2,7 @@
 
 require 'rubygems'
 require 'bundler'
-Bundler.setup(:spec)
-require 'rspec'
+Bundler.require(:development)
 
 =begin
   $ tree --charset=ascii -F fixture_dir/
@@ -76,7 +75,7 @@ shared_examples_for 'using the config file option' do |config_name|
     end
 
     it 'returns 1 if a suffix is specified but indeterminable' do
-      get_output('-s asdf.zxcv', 1)
+      get_output('-s test.no.match.suffix', 1)
     end
   end
 end
@@ -87,9 +86,15 @@ describe 'The to_from executable' do
     let(:expected_num_lines) { 3 }
     let(:searches_template?) { true }
   end
+
   it_behaves_like('using the config file option', 'a custom config file') do
     let(:config_opt) { '-c alt_config_file' }
     let(:expected_num_lines) { 2 }
     let(:searches_template?) { false }
+  end
+
+  it 'returns 1 when an invalid config file is specified' do
+    %x{#{BIN} -c test.no.match.config baz}
+    $?.exitstatus.should == 1
   end
 end

@@ -25,7 +25,6 @@
 # SOFTWARE.
 
 class ToFrom
-  VERSION = '0.1'
   def initialize(dir_suffix_map=nil)
     @map = dir_suffix_map || {}
   end

@@ -2,10 +2,7 @@
 
 require 'rubygems'
 require 'bundler'
-Bundler.setup(:spec)
-require 'rspec'
-require 'fakefs/spec_helpers'
-require 'to_from'
+Bundler.require(:default, :development)
 
 describe ToFrom do
   before(:each) do

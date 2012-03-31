@@ -1,4 +1,4 @@
-require File.expand_path('../lib/to_from', __FILE__)
+require File.expand_path('../lib/to_from/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name = 'to_from'
