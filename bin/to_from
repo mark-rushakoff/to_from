@@ -53,12 +53,11 @@ class ToFrom
         name = options.remainder[0]
         root_name = (options.suffix? ? tf.root_name(name) : name)
 
-        exit 1 unless root_name
+        abort('Could not find appropriate suffix for ' + name) unless root_name
 
         puts tf.find_all_matches(root_name)
       else
-        $stderr.puts options.to_s
-        exit 1
+        abort(options.to_s)
       end
     end
   end
