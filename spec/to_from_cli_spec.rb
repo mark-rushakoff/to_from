@@ -28,11 +28,7 @@ BIN = File.dirname(__FILE__) + '/../bin/to_from'
 FIXTURE_DIR = File.dirname(__FILE__) + '/fixture_dir'
 ENV['RUBYLIB'] = File.dirname(__FILE__) + '/../lib'
 
-shared_examples_for 'using the config file option' do |use_default|
-  let(:config_opt) { use_default ? '' : '-c alt_config_file' }
-  let(:expected_num_lines) { use_default ? 3 : 2 }
-  let(:searches_template?) { use_default }
-
+shared_examples_for 'using the config file option' do |config_name|
   def get_output(args, exit_code=0)
     Dir.chdir(FIXTURE_DIR) do
       lines = %x{#{BIN} #{config_opt} #{args}}.lines.map(&:chomp)
@@ -55,12 +51,12 @@ shared_examples_for 'using the config file option' do |use_default|
     lines.should include 'templates/nested/foo.template' if searches_template?
   end
 
-  describe "The to_from executable" do
-    it 'uses to_from.config.yml and assumes a rooted name by default' do
+  describe "when using #{config_name}" do
+    it 'assumes a rooted name by default' do
       assert_root_file_output(get_output('root_file'))
     end
 
-    it 'uses to_from.config.yml and assumes a rooted name by default and finds nested results' do
+    it 'assumes a rooted name by default and can find nested results' do
       assert_foo_output(get_output('foo'))
     end
 
@@ -86,6 +82,14 @@ shared_examples_for 'using the config file option' do |use_default|
 end
 
 describe 'The to_from executable' do
-  it_behaves_like('using the config file option', true)
-  it_behaves_like('using the config file option', false)
+  it_behaves_like('using the config file option', 'the default config file') do
+    let(:config_opt) { '' }
+    let(:expected_num_lines) { 3 }
+    let(:searches_template?) { true }
+  end
+  it_behaves_like('using the config file option', 'a custom config file') do
+    let(:config_opt) { '-c alt_config_file' }
+    let(:expected_num_lines) { 2 }
+    let(:searches_template?) { false }
+  end
 end
