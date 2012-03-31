@@ -5,6 +5,12 @@ GIT
   specs:
     fakefs (0.4.0)
 
+PATH
+  remote: .
+  specs:
+    to_from (0.1)
+      clip (~> 1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -23,6 +29,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  clip
   fakefs!
-  rspec
+  rspec (~> 2.9)
+  to_from!
