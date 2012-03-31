@@ -6,5 +6,5 @@ group :spec do
 end
 
 group :app do
-  gem 'trollop'
+  gem 'clip'
 end

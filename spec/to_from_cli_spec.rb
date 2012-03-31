@@ -26,11 +26,14 @@ require 'rspec'
 
 BIN = File.dirname(__FILE__) + '/../bin/to_from'
 FIXTURE_DIR = File.dirname(__FILE__) + '/fixture_dir'
+ENV['RUBYLIB'] = File.dirname(__FILE__) + '/../lib'
 
-Dir.chdir(FIXTURE_DIR) do
-
-def get_output(args)
-  %x{#{BIN} #{args}}.lines.map(&:chomp)
+def get_output(args, exit_code=0)
+  Dir.chdir(FIXTURE_DIR) do
+    lines = %x{#{BIN} #{args}}.lines.map(&:chomp)
+    $?.exitstatus.should == exit_code
+    lines
+  end
 end
 
 def assert_root_file_output(lines)
@@ -49,13 +52,16 @@ end
 
 describe "The to_from executable" do
   it 'uses to_from.config.yml and assumes a rooted name by default' do
-    lines = get_output('root_file')
-    assert_root_file_output(lines)
+    assert_root_file_output(get_output('root_file'))
   end
 
   it 'uses to_from.config.yml and assumes a rooted name by default and finds nested results' do
-    lines = get_output('foo')
-    assert_foo_output(lines)
+    assert_foo_output(get_output('foo'))
+  end
+
+  it 'returns 0 and has no output if no matches are found' do
+    lines = get_output('asdf')
+    lines.should be_empty
   end
 
   it 'accepts the -s option to indicate a suffix is present on the supplied option' do
@@ -67,6 +73,8 @@ describe "The to_from executable" do
     assert_root_file_output(get_output('-s root_file_spec.src'))
     assert_root_file_output(get_output('-s root_file.template'))
   end
-end
 
-end # chdir
+  it 'returns 1 if a suffix is specified but indeterminable' do
+    get_output('-s asdf.zxcv', 1)
+  end
+end
