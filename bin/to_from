@@ -32,7 +32,7 @@ require 'to_from'
 require 'clip'
 require 'yaml'
 
-class ToFrom
+module ToFrom
   class Command
     def self.main
       options = Clip do |p|

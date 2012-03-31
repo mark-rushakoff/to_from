@@ -24,29 +24,31 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-class ToFrom
-  def initialize(dir_suffix_map=nil)
-    @map = dir_suffix_map || {}
-  end
+module ToFrom
+  class ToFrom
+    def initialize(dir_suffix_map=nil)
+      @map = dir_suffix_map || {}
+    end
 
-  def matching_suffix(name)
-    suffixes = @map.values.uniq.sort_by { |v| -(v.length) }
-    suffixes.detect { |s| name.end_with? s }
-  end
+    def matching_suffix(name)
+      suffixes = @map.values.uniq.sort_by { |v| -(v.length) }
+      suffixes.detect { |s| name.end_with? s }
+    end
 
-  def root_name(name)
-    suffix = matching_suffix(name)
-    return name.chomp suffix if name.end_with? suffix
-  end
+    def root_name(name)
+      suffix = matching_suffix(name)
+      return name.chomp suffix if name.end_with? suffix
+    end
 
-  def find_match_in_dir(rooted_name, dir)
-    glob = "#{dir}/**/#{rooted_name}#{@map[dir]}"
-    Dir.glob(glob)
-  end
+    def find_match_in_dir(rooted_name, dir)
+      glob = "#{dir}/**/#{rooted_name}#{@map[dir]}"
+      Dir.glob(glob)
+    end
 
-  def find_all_matches(rooted_name)
-    @map.keys.map do |dir|
-      find_match_in_dir(rooted_name, dir)
-    end.flatten
+    def find_all_matches(rooted_name)
+      @map.keys.map do |dir|
+        find_match_in_dir(rooted_name, dir)
+      end.flatten
+    end
   end
 end

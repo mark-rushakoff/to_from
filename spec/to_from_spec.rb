@@ -12,7 +12,7 @@ describe ToFrom do
       'templates' => '.template'
     }
 
-    @tf = ToFrom.new(opts)
+    @tf = ToFrom::ToFrom.new(opts)
   end
 
   describe :matching_suffix do
