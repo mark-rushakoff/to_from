@@ -38,8 +38,11 @@ module ToFrom
       options = Clip do |p|
         p.optional('c', 'config', :desc => 'config file', :default => 'to_from.config.yml')
         p.optional('r', 'restrict', :desc => 'restrict directory to search (can be passed multiple times)', :multi => true)
+        p.optional('x', 'exclude', :desc => 'exclude a directory from search (can be passed multiple times)', :multi => true)
         p.flag('s', 'suffix', :desc => 'indicate that NAME has a suffix')
       end
+
+      abort('Cannot specify both restrict and exclude options') if options.restrict && options.exclude
 
       if options.valid? && !options.remainder.empty?
         config_file = options.config
@@ -57,12 +60,16 @@ module ToFrom
 
         abort('Could not find appropriate suffix for ' + name) unless root_name
 
-        if options.restrict.nil?
-          puts tf.find_all_matches(root_name)
-        else
+        if options.restrict
           options.restrict.each do |dir|
             puts tf.find_match_in_dir(root_name, dir)
           end
+        elsif options.exclude
+          (dir_suffixes.keys - options.exclude).each do |dir|
+            puts tf.find_match_in_dir(root_name, dir)
+          end
+        else
+          puts tf.find_all_matches(root_name)
         end
       else
         abort(options.to_s)

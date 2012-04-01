@@ -27,10 +27,10 @@ BIN = File.dirname(__FILE__) + '/../bin/to_from'
 FIXTURE_DIR = File.dirname(__FILE__) + '/fixture_dir'
 ENV['RUBYLIB'] = File.dirname(__FILE__) + '/../lib'
 
-shared_examples_for 'using the config file option' do |config_name|
+shared_examples_for 'using options' do |option_description|
   def get_output(args, exit_code=0)
     Dir.chdir(FIXTURE_DIR) do
-      lines = %x{#{BIN} #{config_opt} #{args}}.lines.map(&:chomp)
+      lines = %x{#{BIN} #{extra_options} #{args}}.lines.map(&:chomp)
       $?.exitstatus.should == exit_code
       lines
     end
@@ -50,7 +50,7 @@ shared_examples_for 'using the config file option' do |config_name|
     lines.should include 'templates/nested/foo.template' if searches_template?
   end
 
-  describe "when using #{config_name}" do
+  describe "when using #{option_description}" do
     it 'assumes a rooted name by default' do
       assert_root_file_output(get_output('root_file'))
     end
@@ -78,6 +78,21 @@ shared_examples_for 'using the config file option' do |config_name|
       end
     end
 
+    describe 'the -x option' do
+      it 'excludes results from the specified directory' do
+        lines = get_output('-x spec root_file')
+        lines.length.should == (expected_num_lines - 1)
+        lines.should include 'src/root_file.src'
+        lines.should include 'templates/root_file.template' if searches_template?
+      end
+
+      it 'can be passed multiple times' do
+        lines = get_output('-x src -x spec root_file')
+        lines.length.should == (expected_num_lines - 2)
+        lines.should include 'templates/root_file.template' if searches_template?
+      end
+    end
+
     it 'accepts the -s option to indicate a suffix is present on the supplied option' do
       assert_foo_output(get_output('-s foo.src'))
       assert_foo_output(get_output('-s foo_spec.src'))
@@ -95,14 +110,14 @@ shared_examples_for 'using the config file option' do |config_name|
 end
 
 describe 'The to_from executable' do
-  it_behaves_like('using the config file option', 'the default config file') do
-    let(:config_opt) { '' }
+  it_behaves_like('using options', 'the default config file') do
+    let(:extra_options) { '' }
     let(:expected_num_lines) { 3 }
     let(:searches_template?) { true }
   end
 
-  it_behaves_like('using the config file option', 'a custom config file') do
-    let(:config_opt) { '-c alt_config_file' }
+  it_behaves_like('using options', 'a custom config file') do
+    let(:extra_options) { '-c alt_config_file' }
     let(:expected_num_lines) { 2 }
     let(:searches_template?) { false }
   end
