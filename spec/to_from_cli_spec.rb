@@ -111,13 +111,19 @@ end
 
 describe 'The to_from executable' do
   it_behaves_like('using options', 'the default config file') do
-    let(:extra_options) { '' }
+    let(:extra_options) { '-c to_from.config.yml' }
     let(:expected_num_lines) { 3 }
     let(:searches_template?) { true }
   end
 
   it_behaves_like('using options', 'a custom config file') do
     let(:extra_options) { '-c alt_config_file' }
+    let(:expected_num_lines) { 2 }
+    let(:searches_template?) { false }
+  end
+
+  it_behaves_like('using options', 'mappings provided as options') do
+    let(:extra_options) { '-m src,.src -m spec,_spec.src' }
     let(:expected_num_lines) { 2 }
     let(:searches_template?) { false }
   end

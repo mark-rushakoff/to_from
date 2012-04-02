@@ -36,7 +36,8 @@ module ToFrom
   class Command
     def self.main
       options = Clip do |p|
-        p.optional('c', 'config', :desc => 'config file', :default => 'to_from.config.yml')
+        p.optional('m', 'map', :desc => 'map a directory to a suffix (can be passed multiple times)', :multi => true)
+        p.optional('c', 'config', :desc => 'config file')
         p.optional('r', 'restrict', :desc => 'restrict directory to search (can be passed multiple times)', :multi => true)
         p.optional('x', 'exclude', :desc => 'exclude a directory from search (can be passed multiple times)', :multi => true)
         p.flag('s', 'suffix', :desc => 'indicate that NAME has a suffix')
@@ -45,12 +46,18 @@ module ToFrom
       abort('Cannot specify both restrict and exclude options') if options.restrict && options.exclude
 
       if options.valid? && !options.remainder.empty?
-        config_file = options.config
-        abort("Cannot open configuration file #{config_file}") unless File.readable?(config_file)
-        hashes = YAML::load(File.open(config_file))
         dir_suffixes = {}
-        hashes.each do |hash|
-          dir_suffixes[hash['dir']] = hash['suffix']
+
+        if options.config
+          config_file = options.config
+          abort("Cannot open configuration file #{config_file}") unless File.readable?(config_file)
+          YAML::load(File.open(config_file)).each do |hash|
+            dir_suffixes[hash['dir']] = hash['suffix']
+          end
+        end
+
+        (options.map || []).each_slice(2) do |dir, suffix|
+          dir_suffixes[dir] = suffix
         end
 
         tf = ToFrom.new(dir_suffixes)
